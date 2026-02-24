@@ -191,6 +191,24 @@ files = [
 ]
 
 [[package]]
+name = "faker"
+version = "40.5.1"
+description = "Faker is a Python package that generates fake data for you."
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "faker-40.5.1-py3-none-any.whl", hash = "sha256:c69640c1e13bad49b4bcebcbf1b52f9f1a872b6ea186c248ada34d798f1661bf"},
+    {file = "faker-40.5.1.tar.gz", hash = "sha256:70222361cd82aa10cb86066d1a4e8f47f2bcdc919615c412045a69c4e6da0cd3"},
+]
+
+[package.dependencies]
+tzdata = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+tzdata = ["tzdata"]
+
+[[package]]
 name = "fastapi"
 version = "0.131.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -1381,6 +1399,19 @@ files = [
 typing-extensions = ">=4.12.0"
 
 [[package]]
+name = "tzdata"
+version = "2025.3"
+description = "Provider of IANA time zone data"
+optional = false
+python-versions = ">=2"
+groups = ["main"]
+markers = "platform_system == \"Windows\""
+files = [
+    {file = "tzdata-2025.3-py2.py3-none-any.whl", hash = "sha256:06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1"},
+    {file = "tzdata-2025.3.tar.gz", hash = "sha256:de39c2ca5dc7b0344f2eba86f49d614019d29f060fc4ebc8a417896a620b56a7"},
+]
+
+[[package]]
 name = "urllib3"
 version = "2.6.3"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -1695,4 +1726,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<3.13"
-content-hash = "beb671234ff4f25515cbea1a8ec0c35610c30fdb2948b0d3d11ed793f407219e"
+content-hash = "464ae8504ebb7cca6f1804fe2f49df67045c2257e11a53a754190775eaf873af"

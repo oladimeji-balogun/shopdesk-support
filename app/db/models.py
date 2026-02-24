@@ -40,7 +40,7 @@ class Order(Base):
     __tablename__ = "orders"
 
     order_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    status = Mapped[OrderStatus] = mapped_column(Enum(OrderStatus), nullable=False)
+    status: Mapped[OrderStatus] = mapped_column(Enum(OrderStatus), nullable=False)
     total_amount = Column(Float, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
@@ -63,7 +63,7 @@ class EscalationTicket(Base):
 
     ticket_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     reason = Column(String(100), nullable=False)
-    status = Mapped[TicketStatus] = mapped_column(Enum(TicketStatus), nullable=False)
+    status: Mapped[TicketStatus] = mapped_column(Enum(TicketStatus), nullable=False)
     created_at = Column(DateTime, server_default=func.now())
     
     user_id = Column(String, ForeignKey(column="users.user_id", ondelete="CASCADE"))
