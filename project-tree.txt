@@ -1,0 +1,45 @@
+shopdesk-support/
+│
+├── app/
+│   ├── main.py                  # FastAPI entry point
+│   ├── config.py                # Env vars, settings
+│   │
+│   ├── api/
+│   │   ├── routes/
+│   │   │   ├── chat.py          # POST /chat
+│   │   │   ├── sessions.py      # Session management
+│   │   │   └── queue.py         # Human handoff queue
+│   │
+│   ├── agent/
+│   │   ├── router.py            # Intent classifier / orchestrator
+│   │   ├── rag_chain.py         # RAG pipeline (Pinecone + Groq)
+│   │   ├── tools.py             # Tool definitions (order lookup, etc.)
+│   │   └── escalation.py        # Escalation logic
+│   │
+│   ├── memory/
+│   │   └── history.py           # Postgres-backed conversation memory
+│   │
+│   ├── db/
+│   │   ├── database.py          # SQLAlchemy setup
+│   │   ├── models.py            # ORM models
+│   │   └── seed.py              # Mock data seeder
+│   │
+│   ├── vectorstore/
+│   │   ├── pinecone_client.py   # Pinecone init + query
+│   │   └── ingest.py            # Knowledge base ingestion script
+│   │
+│   └── schemas/
+│       └── chat.py              # Pydantic request/response models
+│
+├── knowledge_base/
+│   └── faqs.md                  # Raw KB documents (ShopDesk FAQs)
+│
+├── tests/
+│   ├── test_rag.py
+│   ├── test_tools.py
+│   └── test_router.py
+│
+├── .env
+├── requirements.txt
+├── docker-compose.yml           # Postgres + app
+└── README.md
