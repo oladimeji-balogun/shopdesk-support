@@ -4,7 +4,9 @@ class Config(BaseSettings):
     DATABASE_URI: str 
     GROQ_API_KEY: str 
     PINECONE_API_KEY: str 
-    
+    EMBEDDING_MODEL: str
+    PINECONE_INDEX_NAME: str
+    PINECONE_NAMESPACE: str
     model_config = SettingsConfigDict(
         env_file=".env", 
         env_file_encoding="utf-8", 
