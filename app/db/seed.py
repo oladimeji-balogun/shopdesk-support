@@ -3,9 +3,17 @@ from uuid import uuid4
 from .models import OrderStatus, User, Order, Base
 from .database import SessionLocal, engine
 
-# create all the tables 
-Base.metadata.create_all(bind=engine)
+from ..utils.logger import setup_logger 
 
+logger = setup_logger(
+    name="data-seeding", 
+    filepath="./logs/data-seeding.log", 
+    verbose=True
+)
+# create all the tables 
+
+Base.metadata.create_all(bind=engine)
+logger.info("database tables created successfully")
 # the faker instance
 fake = Faker()
     

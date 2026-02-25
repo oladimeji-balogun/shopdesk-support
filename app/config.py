@@ -7,6 +7,8 @@ class Config(BaseSettings):
     EMBEDDING_MODEL: str
     PINECONE_INDEX_NAME: str
     PINECONE_NAMESPACE: str
+    LOG_LEVEL: str 
+    
     model_config = SettingsConfigDict(
         env_file=".env", 
         env_file_encoding="utf-8", 

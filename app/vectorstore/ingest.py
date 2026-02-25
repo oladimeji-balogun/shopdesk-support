@@ -13,7 +13,15 @@ from sentence_transformers import SentenceTransformer
 
 from .pinecone_client import PineconeClient, VectorRecord
 from ..config import config 
-from ..utils import make_vector_id 
+from ..utils.vector_id import make_vector_id 
+
+from ..utils.logger import setup_logger 
+
+logger = setup_logger(
+    name="ingest", 
+    filename="ingestion.log", 
+    verbose=True
+)
 
 class DocumentFactory: 
     def __init__(self, embedding_model: str, pc_client: PineconeClient): 
@@ -21,7 +29,7 @@ class DocumentFactory:
         self.pc_client = pc_client
 
     def load_document(self, filepath: str) -> str: 
-        
+        logger.info("loading the contents of the knowledgebase")
         try: 
             with open(filepath, "r") as f: 
                 content = f.read()
@@ -34,12 +42,14 @@ class DocumentFactory:
             return 
         
     def chunk_text(self, text: str) -> list[str]: 
+        logger.info("creating semantic chunks")
         chunker = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         
         chunks = chunker.split_text(text=text)
         return chunks 
     
     def embed_chunks(self, chunks: list[str]) -> list[list[float]]: 
+        logger.info("creating embeddings from chunks")
         embeddings = self.embedding_model.encode(sentences=chunks, batch_size=32)
         return embeddings
     
@@ -50,6 +60,7 @@ class DocumentFactory:
     
     
     def upload_to_pinecone(self, chunks: list[str], namespace: str): 
+        logger.info("uploading vectors to pinecone")
         embeddings = self.embed_chunks(chunks=chunks)
         vector_records = [
             VectorRecord(
@@ -63,6 +74,7 @@ class DocumentFactory:
             
         # upload to pinecone
         self.pc_client.upsert(vector_records=vector_records, namespace=namespace)
+        logger.info("uploaded all embeddings to pinecone")
         
 
 
@@ -75,16 +87,12 @@ def run_ingestion():
             index_name=config.PINECONE_INDEX_NAME
         )
     )
-    print("loading the documentss")
+    logger.info("loading the documentss")
     
     text_content = factory.load_document(filepath="./knowledge-base/faqs.md")
-    print("converting the loaded documents into chunks")
     chunks = factory.chunk_text(text=text_content)
-    print(f"length of chunks: {len(chunks)}")
     # load docs to pinecone
-    print("uploading chunks to pinecone")
     factory.upload_to_pinecone(chunks=chunks, namespace=config.PINECONE_NAMESPACE)
-    print("uploaded all documents successfully")
     
 if __name__ == "__main__": 
     run_ingestion()
