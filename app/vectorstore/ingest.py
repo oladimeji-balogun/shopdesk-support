@@ -8,12 +8,11 @@ functions:
     - upload the chunks into pinecone
 """
 
-from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter 
 from sentence_transformers import SentenceTransformer
 
-from .pinecone_client import PineconeClient, VectorRecord, VectorResponse
-from ..config import Config, config 
+from .pinecone_client import PineconeClient, VectorRecord
+from ..config import config 
 from ..utils import make_vector_id 
 
 class DocumentFactory: 
