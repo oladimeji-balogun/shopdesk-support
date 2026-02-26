@@ -24,8 +24,8 @@ logger = setup_logger(
 )
 
 class DocumentFactory: 
-    def __init__(self, embedding_model: str, pc_client: PineconeClient): 
-        self.embedding_model = SentenceTransformer(embedding_model)
+    def __init__(self, embedding_model: SentenceTransformer, pc_client: PineconeClient): 
+        self.embedding_model = embedding_model 
         self.pc_client = pc_client
 
     def load_document(self, filepath: str) -> str: 
@@ -79,9 +79,10 @@ class DocumentFactory:
 
 
 def run_ingestion(): 
-    print("preparing the document factory")
+    embedding_model = SentenceTransformer(config.EMBEDDING_MODEL)
+    logger.info("preparing the document factory")
     factory = DocumentFactory(
-        embedding_model=config.EMBEDDING_MODEL, 
+        embedding_model=embedding_model, 
         pc_client=PineconeClient(
             api_key=config.PINECONE_API_KEY, 
             index_name=config.PINECONE_INDEX_NAME
