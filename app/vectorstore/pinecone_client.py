@@ -42,7 +42,7 @@ class PineconeClient(VectorDBClient):
             print(f"failed to upsert vectors: {e}")
             return 
 
-    def query(self, vector: list[float], namespace: str, filter: dict[str, Any], top_k: int) -> list[VectorResponse]:
+    def query(self, vector: list[float], namespace: str, filter: dict[str, Any] | None = None, top_k: int = 5) -> list[VectorResponse]:
 
         try: 
             resp = self.index.query(
@@ -54,9 +54,9 @@ class PineconeClient(VectorDBClient):
                 top_k=top_k
             ) 
             
-            vector_records = []
+            vectors_response = []
             for r in resp["matches"]: 
-                vector_records.append(
+                vectors_response.append(
                     VectorResponse(
                         id=r.id, 
                         vector=r["values"], 
@@ -64,10 +64,12 @@ class PineconeClient(VectorDBClient):
                         score=r["score"]
                     )
                 )
-            return vector_records
+            return vectors_response
+        
         except Exception as e: 
             print(f"failed to query database: {e}")
             return 
+        
         
     def delete(self, ids: list[str], namespace: str): 
         try: 
@@ -77,7 +79,27 @@ class PineconeClient(VectorDBClient):
             )
         except Exception as e: 
             print(f"failed to delete vectors: {e}")
+            
+    def query_for_stings(
+        self, 
+        vector: list[float], 
+        namespace: str, 
+        filter: dict[str, Any] | None = None, 
+        top_k: int = 3
+    ) -> str: 
         
+        vectors_response = self.query(
+            vector=vector, 
+            namespace=namespace, 
+            filter=filter, 
+            top_k=top_k
+        )
+        
+        return "\n".join(
+            [
+                vector["metadata"]["raw_text"] for vector in vectors_response[:3]
+            ]
+        )
         
     
         

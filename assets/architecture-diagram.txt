@@ -1,0 +1,28 @@
+┌─────────────────────────────────────────────────────┐
+│                   FastAPI App                        │
+│                                                     │
+│  POST /chat        → Main conversation endpoint     │
+│  POST /sessions    → Create new session             │
+│  GET  /sessions    → List sessions                  │
+│  GET  /queue       → Human handoff queue            │
+│  PATCH /queue/:id  → Resolve escalated ticket       │
+└────────────────────┬────────────────────────────────┘
+                     │
+          ┌──────────▼──────────┐
+          │    Router Agent      │  ← LangChain + Groq
+          │  (Intent Classifier) │
+          └──┬─────────┬────────┘
+             │         │         │
+       ┌─────▼─┐  ┌────▼───┐ ┌──▼──────┐
+       │  RAG  │  │ Tools  │ │Escalate │
+       │Chain  │  │  (DB   │ │ (Human  │
+       │       │  │lookups)│ │Handoff) │
+       └───┬───┘  └────┬───┘ └──┬──────┘
+           │           │        │
+      ┌────▼───┐  ┌────▼───┐ ┌──▼──────┐
+      │Pinecone│  │Postgres│ │Postgres │
+      │(KB/RAG)│  │(orders,│ │(queue)  │
+      └────────┘  │accounts│ └─────────┘
+                  │session │
+                  │history)│
+                  └────────┘
