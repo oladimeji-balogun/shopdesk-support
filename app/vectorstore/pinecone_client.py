@@ -80,7 +80,7 @@ class PineconeClient(VectorDBClient):
         except Exception as e: 
             print(f"failed to delete vectors: {e}")
             
-    def query_for_stings(
+    def query_for_strings(
         self, 
         vector: list[float], 
         namespace: str, 
@@ -95,9 +95,9 @@ class PineconeClient(VectorDBClient):
             top_k=top_k
         )
         
-        return "\n".join(
+        return "\n\n".join(
             [
-                vector["metadata"]["raw_text"] for vector in vectors_response[:3]
+                vector.raw_text for vector in vectors_response[:3]
             ]
         )
         

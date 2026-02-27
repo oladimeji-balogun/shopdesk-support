@@ -32,4 +32,12 @@ class TestPineconeClient:
         assert len(results) == 5 
         assert all(isinstance(result, VectorResponse) for result in results)
         assert all(len(result.vector) == 384 for result in results)
+        
+    def test_query_for_strings(self, pc_client): 
+        query_embeddings = [
+            random.random() for i in range(384)
+        ]
+        results = pc_client.query_for_strings(vector=query_embeddings, namespace=config.PINECONE_NAMESPACE)
+
+        assert isinstance(results, str)
     
