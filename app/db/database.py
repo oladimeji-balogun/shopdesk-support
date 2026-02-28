@@ -6,8 +6,7 @@ from ..utils.logger import setup_logger
 
 logger = setup_logger(
     name="database", 
-    filepath="./logs/database.log", 
-    verbose=True
+    verbose=True 
 )
 
 logger.info(msg="connecting to database")

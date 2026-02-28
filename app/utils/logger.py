@@ -18,24 +18,25 @@ from pathlib import Path
 
 
 
-def setup_logger(name: str, filename: str | None = None, verbose: bool = True): 
-    Path("./logs").parent.mkdir(parents=True, exist_ok=True)
-    
+def setup_logger(name: str, verbose: bool = True): 
+    log_dir = Path(config.LOG_DIR)
+    log_dir.parent.mkdir(parents=True, exist_ok=True)    
+
     logger = logging.getLogger(name=name)
     logger.setLevel(level=config.LOG_LEVEL)
     # making a structured formatter 
     formatter = logging.Formatter(fmt="%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     
-    if filename is not None: 
+     
         
-        file_handler = RotatingFileHandler(
-            filename="logs/" + filename, 
-            mode="a", 
-            maxBytes=5 * 1024 * 1024, 
-            backupCount=5
+    file_handler = RotatingFileHandler(
+        filename=log_dir / f"{name}.log", 
+        mode="a", 
+        maxBytes=5 * 1024 * 1024, 
+        backupCount=5
         )
-        file_handler.setFormatter(fmt=formatter)
-        logger.addHandler(file_handler)
+    file_handler.setFormatter(fmt=formatter)
+    logger.addHandler(file_handler)
     
     if verbose: 
         stream_handler = StreamHandler()

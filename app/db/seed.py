@@ -6,8 +6,7 @@ from .database import SessionLocal, engine
 from ..utils.logger import setup_logger 
 
 logger = setup_logger(
-    name="data-seeding", 
-    filepath="./logs/data-seeding.log", 
+    name="seed", 
     verbose=True
 )
 # create all the tables 

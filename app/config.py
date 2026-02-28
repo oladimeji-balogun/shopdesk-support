@@ -8,6 +8,7 @@ class Config(BaseSettings):
     PINECONE_INDEX_NAME: str
     PINECONE_NAMESPACE: str
     LOG_LEVEL: str 
+    LOG_DIR: str
     
     model_config = SettingsConfigDict(
         env_file=".env", 
