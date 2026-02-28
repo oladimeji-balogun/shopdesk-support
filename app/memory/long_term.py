@@ -38,3 +38,6 @@ class LongTermMemory(MemoryBase):
         current_length = len(self._memory)
         self._memory = self._memory[-current_length: ]
         self.save()
+        
+    def get_history(self) -> list[str]:
+        return [record.content for record in self._memory]

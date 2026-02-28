@@ -26,5 +26,9 @@ class MemoryBase(ABC):
     def clear(self): 
         ...
         
+    @abstractmethod
+    def get_history(self): 
+        ...
+        
     
          

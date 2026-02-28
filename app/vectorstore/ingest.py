@@ -54,8 +54,8 @@ class DocumentFactory:
         return embeddings
     
     def embed_query(self, query: str) -> list[float]: 
-        embeddings = self.embedding_model.encode([query])
-        return embeddings[0]
+        embeddings = self.embedding_model.encode(query)
+        return embeddings
     
     
     
