@@ -21,9 +21,6 @@ class MemoryBase(ABC):
     def get_context_str() -> str: 
         ... 
         
-    @abstractmethod
-    def is_full(self): 
-        ...
     
     @abstractmethod
     def clear(self): 
