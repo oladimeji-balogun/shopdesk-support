@@ -1,22 +1,13 @@
 from ..vectorstore import DocumentFactory, PineconeClient 
 from ..config import config 
 from langchain_groq import ChatGroq
-from ..memory import MemoryRecord, MemoryBase, LongTermMemory, ShortTermMemory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
-from langchain_core.runnables import RunnablePassthrough
 
 from ..utils.load_prompt import load_prompt 
 
-RAG_SYSTEM_PROPMT = load_prompt(filename="rag-prompt")
+RAG_SYSTEM_PROPMT = load_prompt(filename="rag")
 
-
-# def get_conveterted_history(): 
-#     memory = ShortTermMemory(context_window=10)
-#     history = [
-#         HumanMessage(content=message.replace("User", "")) if message.startswith("User") else AIMessage(content=message.replace("Assistant", "")) for message in memory.get_history()
-#     ]
-#     return history
 
 class RAGChain: 
     def __init__(

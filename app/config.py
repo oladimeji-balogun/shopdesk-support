@@ -10,6 +10,9 @@ class Config(BaseSettings):
     LOG_LEVEL: str 
     LOG_DIR: str
     
+    RAG_MODEL: str 
+    ROUTER_MODEL: str 
+    
     model_config = SettingsConfigDict(
         env_file=".env", 
         env_file_encoding="utf-8", 
