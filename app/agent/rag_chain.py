@@ -2,7 +2,7 @@ from ..vectorstore import DocumentFactory, PineconeClient
 from ..config import config 
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder 
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage
 
 from ..utils.load_prompt import load_prompt 
 
@@ -17,7 +17,7 @@ class RAGChain:
     ): 
         self.document_factory = document_factory
         self.pinecone_client = pinecone_client
-        self._llm = ChatGroq(api_key=config.GROQ_API_KEY, model="llama-3.3-70b-versatile")
+        self._llm = ChatGroq(api_key=config.GROQ_API_KEY, model=config.RAG_MODEL)
         
     def run(self, query, conversation_history: list[str], namespace: str): 
         query_embeddings = self.document_factory.embed_query(query=query)
