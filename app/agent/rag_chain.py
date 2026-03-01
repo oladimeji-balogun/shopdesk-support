@@ -28,7 +28,6 @@ class RAGChain:
             HumanMessage(content=message.replace("User", "")) if message.startswith("User") else AIMessage(content=message.replace("Assistant", "")) for message in conversation_history
         ]
         
-        # create an instance of the memory object 
         prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", RAG_SYSTEM_PROPMT), 
