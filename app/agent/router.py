@@ -1,7 +1,6 @@
 from pydantic import BaseModel 
 from typing import Literal 
-from ..vectorstore import PineconeClient, DocumentFactory
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from ..utils import load_prompt
 from langchain_groq import ChatGroq
@@ -38,7 +37,7 @@ class Router:
         )
         
         history = [
-            HumanMessage(content=s.startswith("User: ", "")) if s.startswith("User: ") else AIMessage(content=s.replace("Assistant: ", "")) for s in conversation_history
+            HumanMessage(content=s.replace("User: ", "")) if s.startswith("User: ") else AIMessage(content=s.replace("Assistant: ", "")) for s in conversation_history
             ]
         
         structured_llm = self.llm.with_structured_output(schema=RouterDecision)
