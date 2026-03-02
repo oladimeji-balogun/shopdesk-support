@@ -115,7 +115,7 @@ class Orchestrator:
         self._save_message(content=query, session_id=session_id, role=MessageRole.USER)
         self._save_message(content=response, session_id=session_id, role=MessageRole.ASSISTANT)
 
-        return response 
+        return intent, response 
         
           
     def _handle_tool_call(
