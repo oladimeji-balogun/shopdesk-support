@@ -1,18 +1,19 @@
 from .rag_chain import RAGChain
 from .router import Router 
-from ..db import User, Message, SessionLocal
+from ..db import User, Message, SessionLocal, EscalationTicket, TicketStatus, MessageRole, Session as SessionModel
 from ..tools import get_account_info, get_order_status, get_recent_orders
 from langchain_groq import ChatGroq 
 from ..config import config 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session as DBSession
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import BaseTool
 
 from ..utils import load_prompt
+from ..utils import setup_logger 
 
+logger = setup_logger(name="orchestrator", verbose=True)
 TOOL_CALL_PROMPT = load_prompt(filename="tool-call")
-ORCHESTRATOR_PROMPT = load_prompt(filename="orchestrator")
 
 class Orchestrator: 
     def __init__(
@@ -20,7 +21,7 @@ class Orchestrator:
         rag: RAGChain, 
         router: Router,
         tools: list[BaseTool], 
-        db: Session
+        db: DBSession
     ): 
         self._rag = rag 
         self._router = router 
@@ -31,18 +32,15 @@ class Orchestrator:
         
     def _get_history(self, session_id: str) -> list[str]: 
 
-        try: 
-            resp = self.db.query(Message).filter(
-                Message.session_id == session_id
+        resp = self.db.query(Message).filter(
+            Message.session_id == session_id
             ).order_by(Message.created_at.asc()).limit(
                 limit=10
             )
-            # if resp is None: return []
-            return [
-                f"User: {msg.content}" if msg.role == "user" else f"Assistant: {msg.content}" for msg in resp  
-            ]
-        finally: 
-            self.db.close()
+        # if resp is None: return []
+        return [
+            f"User: {msg.content}" if msg.role == "user" else f"Assistant: {msg.content}" for msg in resp  
+        ]
             
     def _save_message(self, content: str, session_id: str, role: str): 
         payload = Message(
@@ -50,12 +48,76 @@ class Orchestrator:
             role=role, 
             content=content
         )
-        try: 
-            self.db.add(payload)
-            self.db.commit()
-        finally: 
-            self.db.close()
-            
+        self.db.add(payload)
+        self.db.commit()
+        
+        
+    def handle(
+        self, 
+        query: str, 
+        session_id: str
+    ): 
+        """
+        the main method of the orchestrator
+        
+        it does the: 
+            - taking in of the user's response
+            - intent classification
+            - route to the appropriate worker for the task based on the intent
+            - get the result from the worker and construct messages to be saved in the database
+            - save the messages in the database
+            - return a nice response to the user
+        """
+        conversation_history = self._get_history(session_id=session_id)
+        intent = self._router.route(
+            query=query, 
+            conversation_history=conversation_history
+        )
+        logger.info(f"intent classified as {intent}")
+        # now do the routing 
+        if intent == "rag": 
+            try: 
+                response = self._rag.run(query=query, conversation_history=conversation_history, namespace=config.PINECONE_NAMESPACE)
+            except Exception as e: 
+                logger.error(f"orchestrator rag error: {e}")
+                return "i am sorry, something went wrong. Please try again or contact support."
+        elif intent == "tool_call": 
+            try: 
+                response = self._handle_tool_call(query=query, conversation_history=conversation_history)
+            except Exception as e: 
+                logger.error(f"orchestrator tool error: {e}")
+                return "i am sorry, something went wrong. Try again or contact support."
+
+        else: 
+            try:
+                logger.info(f"querying the database to get the user id")
+                session = self.db.query(SessionModel).filter(
+                    SessionModel.session_id == session_id
+                ).first()
+                user_id = session.user_id
+                
+                ticket = EscalationTicket(
+                    session_id=session_id, 
+                    reason=query, 
+                    user_id=user_id,
+                    status=TicketStatus.OPEN
+                )
+                self.db.add(ticket)
+                self.db.commit()
+                logger.info("added escalation ticket to the databse")
+            finally: 
+                # self.db.close()
+                pass 
+                
+            response = "I am sorry for the inconvenience, I have reported the issue to a human support agent who will be able to help you further. \nPlease hold on."
+        
+        # now, i want to save both messages 
+        self._save_message(content=query, session_id=session_id, role=MessageRole.USER)
+        self._save_message(content=response, session_id=session_id, role=MessageRole.ASSISTANT)
+
+        return response 
+        
+          
     def _handle_tool_call(
         self, 
         query: str, 
