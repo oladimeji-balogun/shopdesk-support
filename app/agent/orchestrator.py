@@ -80,42 +80,38 @@ class Orchestrator:
                 response = self._rag.run(query=query, conversation_history=conversation_history, namespace=config.PINECONE_NAMESPACE)
             except Exception as e: 
                 logger.error(f"orchestrator rag error: {e}")
-                return "i am sorry, something went wrong. Please try again or contact support."
+                return intent, "i am sorry, something went wrong. Please try again or contact support."
         elif intent == "tool_call": 
             try: 
                 response = self._handle_tool_call(query=query, conversation_history=conversation_history)
             except Exception as e: 
                 logger.error(f"orchestrator tool error: {e}")
-                return "i am sorry, something went wrong. Try again or contact support."
+                return intent, "i am sorry, something went wrong. Try again or contact support."
 
         else: 
-            try:
-                logger.info(f"querying the database to get the user id")
-                session = self.db.query(SessionModel).filter(
-                    SessionModel.session_id == session_id
-                ).first()
-                user_id = session.user_id
+            logger.info(f"querying the database to get the user id")
+            session = self.db.query(SessionModel).filter(
+                SessionModel.session_id == session_id
+            ).first()
+            user_id = session.user_id
                 
-                ticket = EscalationTicket(
-                    session_id=session_id, 
-                    reason=query, 
-                    user_id=user_id,
-                    status=TicketStatus.OPEN
-                )
-                self.db.add(ticket)
-                self.db.commit()
-                logger.info("added escalation ticket to the databse")
-            finally: 
-                # self.db.close()
-                pass 
-                
+            ticket = EscalationTicket(
+                session_id=session_id, 
+                reason=query, 
+                user_id=user_id,
+                status=TicketStatus.OPEN
+            )
+            self.db.add(ticket)
+            self.db.commit()
+            logger.info("added escalation ticket to the databse")
+            
             response = "I am sorry for the inconvenience, I have reported the issue to a human support agent who will be able to help you further. \nPlease hold on."
         
         # now, i want to save both messages 
         self._save_message(content=query, session_id=session_id, role=MessageRole.USER)
         self._save_message(content=response, session_id=session_id, role=MessageRole.ASSISTANT)
 
-        return intent, response 
+        return intent, response
         
           
     def _handle_tool_call(

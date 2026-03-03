@@ -27,12 +27,12 @@ rag = RAGChain(
 router = Router()
 
 def get_orchestrator(
-    
+    db: DBSession = Depends(get_db)
 ) -> Orchestrator: 
     orchestrator = Orchestrator(
         rag=rag, 
         router=router, 
-        db=Depends(get_db), 
+        db=db, 
         tools=[get_recent_orders, get_order_status, get_account_info]
     )
     return orchestrator 

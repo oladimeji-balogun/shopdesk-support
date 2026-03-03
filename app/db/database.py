@@ -21,11 +21,10 @@ def get_db():
     finally: 
         db.close()
         
-def test_db_connection(): 
+async def test_db_connection(): 
     try: 
         with engine.connect() as conn: 
-            print("database connection successful")
+            return "success"
     except Exception as e: 
-        print(f"failed to connect: {e}")
+        return
         
-# test_db_connection()
