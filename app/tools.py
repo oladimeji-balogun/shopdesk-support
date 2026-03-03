@@ -4,7 +4,11 @@ from .db import SessionLocal, Order, User
 
 @tool 
 def get_order_status(order_id: str) -> dict: 
-    """get the status and information about an order by its ID"""
+    """
+    Get the status and details of a SPECIFIC order.
+    Use this ONLY when the user provides an explicit order ID.
+    Parameter: order_id — the exact UUID of the order to look up.
+    """
     db = SessionLocal()
     try: 
         result = db.query(Order).filter(
@@ -24,7 +28,11 @@ def get_order_status(order_id: str) -> dict:
         
 @tool 
 def get_recent_orders(user_id: str) -> list[dict]: 
-    """get the top five most recent orders by a user"""
+    """
+    Get the 5 most recent orders for a user.
+    Use this when the user asks about their orders WITHOUT providing a specific order ID.
+    Parameter: user_id — the UUID of the user whose orders to retrieve.
+    """
     db = SessionLocal()
     try: 
         orders = db.query(Order).filter(

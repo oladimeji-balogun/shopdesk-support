@@ -83,7 +83,7 @@ class Orchestrator:
                 return intent, "i am sorry, something went wrong. Please try again or contact support."
         elif intent == "tool_call": 
             try: 
-                response = self._handle_tool_call(query=query, conversation_history=conversation_history)
+                response = self._handle_tool_call(query=query, conversation_history=conversation_history, session_id=session_id)
             except Exception as e: 
                 logger.error(f"orchestrator tool error: {e}")
                 return intent, "i am sorry, something went wrong. Try again or contact support."
@@ -117,10 +117,16 @@ class Orchestrator:
     def _handle_tool_call(
         self, 
         query: str, 
-        conversation_history: list[str]
+        conversation_history: list[str], 
+        session_id: str
     ): 
         llm_with_tools = self._llm.bind_tools(tools=self._tools)
+        
         messages = [SystemMessage(content=TOOL_CALL_PROMPT)]
+        # add the user context
+        messages.append(
+            SystemMessage(content=f"user_id: {self._get_user_context(session_id=session_id)}")
+        )
         
         history = [
             HumanMessage(content=s.replace("User: ", "")) if s.startswith("User: ") else AIMessage(content=s.replace("Assistant: ", "")) for s in conversation_history
@@ -157,3 +163,12 @@ class Orchestrator:
         # now passing the the updated history back to the final llm 
         final_response = self._llm.invoke(messages)
         return final_response.content
+    
+    def _get_user_context(self, session_id: str) -> str: 
+        session = self.db.query(SessionModel).filter(
+            SessionModel.session_id == session_id
+        ).first()
+        user = self.db.query(User).filter(
+            User.user_id == session.user_id
+        ).first()
+        return f"name: {user.name}, email: {user.email}, phone-no: {user.phone}, user_id: {user.user_id}"
