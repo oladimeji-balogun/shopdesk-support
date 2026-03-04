@@ -34,7 +34,8 @@ class User(Base):
     user_id = Column(PGUUID, primary_key=True, default=uuid.uuid4())
     name = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False, unique=True)
-    phone = Column(String(15), nullable=False, unique=False)
+    phone = Column(String(15), nullable=False, unique=True)
+    hashed_password = Column(String, nullable=False)
 
 class Order(Base): 
     __tablename__ = "orders"
