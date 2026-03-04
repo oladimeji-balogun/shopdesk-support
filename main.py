@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends
-from app.routes import chat, queue, sessions, user
+from app.routes import chat, queue, sessions, user, auth
 from app.db import get_db, test_db_connection
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -10,6 +10,8 @@ app.include_router(router=chat.router)
 app.include_router(router=queue.router)
 app.include_router(router=sessions.router)
 app.include_router(router=user.router)
+app.include_router(router=auth.router)
+
 
 @app.get("/health")
 async def get_health(db: Session = Depends(get_db)): 

@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from ..db import get_db, Session as SessionModel 
+from ..db import get_db, Session as SessionModel, User
 from ..schemas import SessionCreate, SessionResponse 
 from sqlalchemy.orm import Session as DBSession
 from sqlalchemy import UUID
+from ..auth.dependencies import get_current_user
 
 
 router = APIRouter(
@@ -13,7 +14,11 @@ router = APIRouter(
 
 # make the session creation route 
 @router.post("/", response_model=SessionResponse)
-def create_session(session: SessionCreate, db: DBSession = Depends(get_db)): 
+def create_session(
+    session: SessionCreate, 
+    db: DBSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+    ): 
     new_session = SessionModel(
         user_id=session.user_id
     )

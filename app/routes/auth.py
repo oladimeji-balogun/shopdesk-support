@@ -30,7 +30,8 @@ def create_user(user_data: UserCreate, db: DBSession = Depends(get_db)):
     new_user = User(
         name=user_data.name, 
         email=user_data.email, 
-        hashed_password=hash_password(password=user_data.password)
+        hashed_password=hash_password(password=user_data.password),
+        phone=user_data.phone
     )
         
     db.add(new_user)

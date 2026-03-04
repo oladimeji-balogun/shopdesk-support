@@ -15,7 +15,7 @@ def create_access_token(data: dict) -> str:
     return jwt.encode(
         claims=data, 
         key=config.JWT_SECRET_KEY, 
-        algorithm=[config.JWT_ALGORITHM]
+        algorithm=config.JWT_ALGORITHM
     )
     
 def create_refresh_token(data: dict) -> str: 
@@ -30,7 +30,7 @@ def create_refresh_token(data: dict) -> str:
     return jwt.encode(
         claims=data, 
         key=config.JWT_SECRET_KEY, 
-        algorithm=[config.JWT_ALGORITHM]
+        algorithm=config.JWT_ALGORITHM
     )
     
 def decode_token(token: str) -> dict: 
