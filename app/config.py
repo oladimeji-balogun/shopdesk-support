@@ -13,6 +13,11 @@ class Config(BaseSettings):
     RAG_MODEL: str 
     ROUTER_MODEL: str 
     
+    ACCESS_TOKEN_EXPIRE_MINUTES: int 
+    REFRESH_TOKEN_EXPIRE_HOURS: int 
+    JWT_SECRET_KEY: str 
+    JWT_ALGORITHM: str 
+    
     model_config = SettingsConfigDict(
         env_file=".env", 
         env_file_encoding="utf-8", 
