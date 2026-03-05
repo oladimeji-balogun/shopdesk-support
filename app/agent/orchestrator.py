@@ -1,12 +1,10 @@
 from .rag_chain import RAGChain
 from .router import Router 
-from ..db import User, Message, SessionLocal, EscalationTicket, TicketStatus, MessageRole, Session as SessionModel
-from ..tools import get_account_info, get_order_status, get_recent_orders
+from ..db import User, Message, EscalationTicket, TicketStatus, MessageRole, Session as SessionModel
 from langchain_groq import ChatGroq 
 from ..config import config 
 from sqlalchemy.orm import Session as DBSession
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import BaseTool
 
 from ..utils import load_prompt

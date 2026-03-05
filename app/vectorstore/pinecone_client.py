@@ -1,5 +1,4 @@
-from pinecone import Pinecone, PineconeApiKeyError, ServerlessSpec
-from ..config import Config 
+from pinecone import Pinecone, ServerlessSpec
 from .base import VectorDBClient, VectorRecord, VectorResponse
 from typing import Any
 

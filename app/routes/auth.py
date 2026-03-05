@@ -51,6 +51,7 @@ def create_user(request: Request, user_data: UserCreate, db: DBSession = Depends
     return {
         "refresh_token": refresh_token, 
         "access_token": access_token, 
+        "user_id": str(new_user.user_id),
         "type": "bearer"
     }
     
@@ -86,6 +87,7 @@ def login_user(request: Request, user_data: UserLogin, db: DBSession = Depends(g
     
     return {
         "refresh_token": refresh_token, 
+        "user_id": str(user.user_id),
         "access_token": access_token, 
         "type": "bearer"
     }

@@ -3,12 +3,12 @@ from .vectorstore import DocumentFactory, PineconeClient
 from .db import get_db 
 from fastapi import Depends 
 from sqlalchemy.orm import Session as DBSession 
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 from .config import config 
 from .tools import get_account_info, get_order_status, get_recent_orders
 
 
-embedding_model = SentenceTransformer(config.EMBEDDING_MODEL)
+embedding_model = TextEmbedding(model_name=config.EMBEDDING_MODEL)
 pinecone_client = PineconeClient(
     api_key=config.PINECONE_API_KEY, 
     index_name=config.PINECONE_INDEX_NAME

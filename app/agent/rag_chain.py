@@ -22,7 +22,7 @@ class RAGChain:
     def run(self, query, conversation_history: list[str], namespace: str): 
         query_embeddings = self.document_factory.embed_query(query=query)
         # use the embeddings to query the vector db
-        retrieved_text = self.pinecone_client.query_for_strings(vector=query_embeddings.tolist(), namespace=namespace)
+        retrieved_text = self.pinecone_client.query_for_strings(vector=query_embeddings, namespace=namespace)
         
         history = [
             HumanMessage(content=message.replace("User", "")) if message.startswith("User") else AIMessage(content=message.replace("Assistant", "")) for message in conversation_history
