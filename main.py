@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 # fastapi app 
-app = FastAPI()
+app = FastAPI(title="ShopDesk Customer Support API")
 app.include_router(router=chat.router)
 app.include_router(router=queue.router)
 app.include_router(router=sessions.router)

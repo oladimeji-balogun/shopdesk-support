@@ -1,12 +1,13 @@
 from ..auth.dependencies import get_current_user
 from ..db import get_db, User
 from sqlalchemy.orm import Session as DBSession 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from ..schemas import UserOut, UserCreate, UserLogin, TokenResponse, Token
 from ..auth.password import hash_password, verify_password
 from ..auth.jwt import create_access_token, create_refresh_token, decode_token
 from jose import JWTError
-
+from ..limiter import limiter
+from ..utils.rate_limiting import get_user_id
 router = APIRouter(
     prefix="/auth", 
     tags=["auth"]
@@ -14,7 +15,8 @@ router = APIRouter(
 
 # enpoint to create a new users
 @router.post("/register", response_model=TokenResponse)
-def create_user(user_data: UserCreate, db: DBSession = Depends(get_db)): 
+@limiter.limit("10/min", key_func=get_user_id)
+def create_user(request: Request, user_data: UserCreate, db: DBSession = Depends(get_db)): 
     # check whether a user with the same email already exist 
     existing_user = db.query(User).filter(
         User.email == user_data.email
@@ -54,7 +56,8 @@ def create_user(user_data: UserCreate, db: DBSession = Depends(get_db)):
     
     
 @router.post("/login", response_model=TokenResponse)
-def login_user(user_data: UserLogin, db: DBSession = Depends(get_db)): 
+@limiter.limit("5/minute", key_func=get_user_id)
+def login_user(request: Request, user_data: UserLogin, db: DBSession = Depends(get_db)): 
     # check if usre exist 
     user = db.query(User).filter(
         User.email == user_data.email
@@ -89,7 +92,8 @@ def login_user(user_data: UserLogin, db: DBSession = Depends(get_db)):
     
 # endpoint to refresh tokens 
 @router.post("/refresh", response_model=TokenResponse)
-def refresh_tokens(token: Token): 
+@limiter.limit("10/minute", key_func=get_user_id)
+def refresh_tokens(request: Request, token: Token): 
     try: 
         data = decode_token(token=token.content)
     except JWTError: 
@@ -119,5 +123,6 @@ def refresh_tokens(token: Token):
     }
     
 @router.post("/logout")
-def logout_user(): 
+@limiter.limit("10/minute", key_func=get_user_id)
+def logout_user(request: Request): 
     return {"message": "success"}
