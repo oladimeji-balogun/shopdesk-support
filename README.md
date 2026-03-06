@@ -8,6 +8,7 @@
 ![groq](https://img.shields.io/badge/Groq-LLM-purple)
 ![pinecone](https://img.shields.io/badge/Pinecone-VectorDB-green)
 
+![ai-custormer-support-agent](/assets/customer-support-agent-pix-2.png)
 
 ## overview
 An end-to-end, production-grade autonomous AI support agent that routes, reasons, and responds powered by RAG, tool calling, and intent classification.
@@ -64,13 +65,13 @@ All conversation turns are persisted in Postgres for context across sessions.
     - install: [poetry](https://python-poetry.org/docs/)
 
 2. Installation: 
-    - ```bash
+    ```bash
     git clone https://github.com/oladimeji-balogun/shopdesk-support
     ```
-    - ```bash
+    ```bash
     cd shopdesk-support 
     ```
-    - ```bash
+    ```bash
     poetry install 
     ```
 3. Environment variables: 
