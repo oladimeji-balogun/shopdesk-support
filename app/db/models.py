@@ -22,7 +22,9 @@ class TicketStatus(str, enum.Enum):
     IN_PROGRESS = "in_progress"
     RESOLVED = "resolved"
 
-    
+class UserRole(str, enum.Enum): 
+    CUSTOMER = "customer"
+    AGENT = "agent"
 
 class Base(DeclarativeBase): 
     pass 
@@ -35,7 +37,9 @@ class User(Base):
     name = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False, unique=True)
     phone = Column(String(15), nullable=False, unique=True)
-    hashed_password = Column(String, nullable=False)
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole), nullable=False, server_default=UserRole.CUSTOMER)
+    hashed_password = Column(String, nullable=False, server_default="")
+    
 
 class Order(Base): 
     __tablename__ = "orders"

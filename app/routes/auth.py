@@ -52,7 +52,8 @@ def create_user(request: Request, user_data: UserCreate, db: DBSession = Depends
         "refresh_token": refresh_token, 
         "access_token": access_token, 
         "user_id": str(new_user.user_id),
-        "type": "bearer"
+        "type": "bearer", 
+        "role": new_user.role
     }
     
     
