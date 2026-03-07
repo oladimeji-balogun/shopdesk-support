@@ -37,8 +37,8 @@ class User(Base):
     name = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False, unique=True)
     phone = Column(String(15), nullable=False, unique=True)
-    role: Mapped[UserRole] = mapped_column(Enum(UserRole), nullable=False, server_default=UserRole.CUSTOMER)
-    hashed_password = Column(String, nullable=False, server_default="")
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole), nullable=False, default=UserRole.CUSTOMER)
+    hashed_password = Column(String, nullable=False)
     
 
 class Order(Base): 

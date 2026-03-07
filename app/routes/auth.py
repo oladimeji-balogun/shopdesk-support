@@ -53,7 +53,7 @@ def create_user(request: Request, user_data: UserCreate, db: DBSession = Depends
         "access_token": access_token, 
         "user_id": str(new_user.user_id),
         "type": "bearer", 
-        "role": str(new_user.role)
+        "role": new_user.role
     }
     
     
@@ -91,7 +91,7 @@ def login_user(request: Request, user_data: UserLogin, db: DBSession = Depends(g
         "user_id": str(user.user_id),
         "access_token": access_token, 
         "type": "bearer", 
-        "role": str(user.role)
+        "role": user.role
     }
     
 # endpoint to refresh tokens 
