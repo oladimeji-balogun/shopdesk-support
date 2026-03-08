@@ -18,12 +18,12 @@ router = APIRouter(
 @limiter.limit("10/minute", key_func=get_user_id)
 def create_session(
     request: Request,
-    session: SessionCreate, 
+    # session: SessionCreate, 
     db: DBSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
     ): 
     new_session = SessionModel(
-        user_id=session.user_id
+        user_id=current_user.user_id
     )
     db.add(new_session)
     db.commit()
