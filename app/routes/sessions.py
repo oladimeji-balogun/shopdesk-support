@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from ..db import get_db, Session as SessionModel, User
+from ..db import get_db, Session as SessionModel, User, Message
 from ..schemas import SessionCreate, SessionResponse 
 from sqlalchemy.orm import Session as DBSession
 from sqlalchemy import UUID
@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-# make the session creation route 
+# create a session
 @router.post("/", response_model=SessionResponse)
 @limiter.limit("10/minute", key_func=get_user_id)
 def create_session(
@@ -31,6 +31,8 @@ def create_session(
     
     return new_session
 
+
+# end a sesstion
 @router.patch("/{session_id}/end", response_model=SessionResponse)
 @limiter.limit("10/minute", key_func=get_user_id)
 def end_session(request: Request, session_id: str, db: DBSession = Depends(get_db)): 
@@ -44,3 +46,28 @@ def end_session(request: Request, session_id: str, db: DBSession = Depends(get_d
     db.commit()
     db.refresh(session)
     return session
+
+# get all messages associated with a sesionss
+@router.get("/{session_id}/messages")
+def get_messages(
+    session_id: str, 
+    db: DBSession = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+): 
+    messages = db.query(Message).filter(
+        Message.session_id == session_id
+    ).all()
+
+    return {"messages": messages}
+
+# get all user sessions 
+@router.get("/")
+def get_all_sessions(
+    current_user: User = Depends(get_current_user), 
+    db: DBSession = Depends(get_db)
+): 
+    sessions = db.query(SessionModel).filter(
+        SessionModel.user_id == current_user.user_id
+    ).all()
+
+    return sessions
