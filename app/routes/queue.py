@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, Request
-from ..schemas import TicketRecord 
+from fastapi import APIRouter, Depends, Request, HTTPException
+from ..schemas import TicketRecord, TicketUpdate
 from ..db import EscalationTicket, get_db, TicketStatus, User
 from sqlalchemy.orm import Session as DBSession
 from ..auth.dependencies import get_current_user
@@ -24,3 +24,28 @@ def get_open_tickets(
         EscalationTicket.status == TicketStatus.OPEN
     ).all()
     return open_tickets
+
+
+@router.patch("/{ticket_id}")
+def update_ticket(
+    ticket_id: str, 
+    update: TicketUpdate,
+    db: DBSession = Depends(get_db), 
+    user: User = Depends(get_current_user)
+): 
+    ticket = db.query(EscalationTicket).filter(
+        EscalationTicket.ticket_id == ticket_id
+    ).first()
+
+    if not ticket: 
+        raise HTTPException(
+            status_code=404, 
+            detail="no tickets found"
+        )
+        
+    ticket.status = update.status
+    db.commit()
+    db.refresh(ticket)
+
+    return {"message": "successful"}
+    
