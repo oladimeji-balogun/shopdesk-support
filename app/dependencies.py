@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session as DBSession
 from fastembed import TextEmbedding
 from .config import config 
 from .tools import get_account_info, get_order_status, get_recent_orders
+from langchain_groq import ChatGroq
 
 
 embedding_model = TextEmbedding(model_name=config.EMBEDDING_MODEL)
@@ -26,6 +27,9 @@ rag = RAGChain(
 
 router = Router()
 
+# Bug 2.5: Singleton LLM client to be shared across requests
+llm = ChatGroq(api_key=config.GROQ_API_KEY, model=config.RAG_MODEL)
+
 def get_orchestrator(
     db: DBSession = Depends(get_db)
 ) -> Orchestrator: 
@@ -33,7 +37,7 @@ def get_orchestrator(
         rag=rag, 
         router=router, 
         db=db, 
-        tools=[get_recent_orders, get_order_status, get_account_info]
+        tools=[get_recent_orders, get_order_status, get_account_info],
+        llm=llm
     )
     return orchestrator 
-

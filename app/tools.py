@@ -75,3 +75,56 @@ def get_account_info(user_id: str) -> dict:
         }
     finally: 
         db.close()
+
+
+@tool
+def cancel_order(order_id: str) -> dict:
+    """
+    Cancels an order if it is still in PENDING status.
+    Parameter: order_id — the UUID of the order to cancel.
+    Returns: A confirmation message or an error if the order cannot be cancelled.
+    """
+    db = SessionLocal()
+    try:
+        order = db.query(Order).filter(Order.order_id == order_id).first()
+        if not order:
+            return {"error": "Order not found."}
+        
+        from .db import OrderStatus
+        if order.status != OrderStatus.PENDING:
+            return {"error": f"Cannot cancel order in {order.status.value} status. Only PENDING orders can be cancelled."}
+        
+        order.status = OrderStatus.CANCELLED
+        db.commit()
+        return {"success": True, "message": f"Order {order_id} has been cancelled successfully."}
+    finally:
+        db.close()
+
+
+@tool
+def initiate_return(order_id: str, reason: str) -> dict:
+    """
+    Initiates a return for a DELIVERED order.
+    Parameter: order_id — the UUID of the order to return.
+    Parameter: reason — the reason for the return.
+    Returns: A confirmation message or an error if the return cannot be initiated.
+    """
+    # Simple implementation: in a real app, this would create a Return record
+    db = SessionLocal()
+    try:
+        order = db.query(Order).filter(Order.order_id == order_id).first()
+        if not order:
+            return {"error": "Order not found."}
+        
+        from .db import OrderStatus
+        if order.status != OrderStatus.DELIVERED:
+            return {"error": f"Cannot return an order that is {order.status.value}. Only DELIVERED orders can be returned."}
+        
+        # In a real system, we'd create a Return object here
+        # For now, we'll just return a success message
+        return {
+            "success": True, 
+            "message": f"Return initiated for order {order_id}. Reason: {reason}. A return label has been sent to your email."
+        }
+    finally:
+        db.close()

@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends
-from app.routes import chat, queue, sessions, user, auth
+from app.routes import chat, queue, sessions, user, auth, analytics, knowledge, orders
 from app.db import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -21,6 +21,9 @@ app.include_router(router=queue.router)
 app.include_router(router=sessions.router)
 app.include_router(router=user.router)
 app.include_router(router=auth.router)
+app.include_router(router=analytics.router)
+app.include_router(router=knowledge.router)
+app.include_router(router=orders.router)
 
 app.add_middleware(
     CORSMiddleware, 
