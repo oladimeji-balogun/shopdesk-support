@@ -22,8 +22,8 @@ class SessionResponse(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
     
-class ChatRequest(BaseModel): 
-    content: str 
+class ChatRequest(BaseModel):
+    content: str = Field(..., min_length=1, max_length=4096, description="User message content")
 
 class ChatResponse(BaseModel): 
     response: str 
@@ -36,6 +36,7 @@ class TicketRecord(BaseModel):
     status: str 
     ticket_id: UUID 
     user_id: UUID 
-    session_id: UUID 
+    session_id: UUID
+    assigned_to: Optional[UUID] = None
     
     model_config = ConfigDict(from_attributes=True)

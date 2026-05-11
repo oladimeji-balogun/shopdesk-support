@@ -20,7 +20,7 @@ from pathlib import Path
 
 def setup_logger(name: str, verbose: bool = True): 
     log_dir = Path(config.LOG_DIR)
-    log_dir.parent.mkdir(parents=True, exist_ok=True)    
+    log_dir.mkdir(parents=True, exist_ok=True)    
 
     logger = logging.getLogger(name=name)
     logger.setLevel(level=config.LOG_LEVEL)

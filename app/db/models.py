@@ -25,6 +25,7 @@ class TicketStatus(str, enum.Enum):
 class UserRole(str, enum.Enum): 
     CUSTOMER = "customer"
     AGENT = "agent"
+    ADMIN = "admin"
 
 class Base(DeclarativeBase): 
     pass 
@@ -33,12 +34,15 @@ class Base(DeclarativeBase):
 class User(Base): 
     __tablename__ = "users"
     
-    user_id = Column(PGUUID, primary_key=True, default=uuid.uuid4())
+    user_id = Column(PGUUID, primary_key=True, default=lambda: uuid.uuid4())
     name = Column(String(50), nullable=False)
     email = Column(String(50), nullable=False, unique=True)
     phone = Column(String(15), nullable=False, unique=True)
     role: Mapped[UserRole] = mapped_column(Enum(UserRole), nullable=False, default=UserRole.CUSTOMER)
     hashed_password = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    email_verified = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
     
 
 class Order(Base): 
@@ -67,13 +71,14 @@ class EscalationTicket(Base):
     __tablename__ = "escalation_tickets"
 
     ticket_id = Column(PGUUID, primary_key=True, default=lambda: uuid.uuid4())
-    reason = Column(String(100), nullable=False)
+    reason = Column(Text, nullable=False)
     status: Mapped[TicketStatus] = mapped_column(Enum(TicketStatus), nullable=False)
     created_at = Column(DateTime, server_default=func.now())
     
     user_id = Column(PGUUID, ForeignKey(column="users.user_id", ondelete="CASCADE"))
     order_id = Column(PGUUID, ForeignKey(column="orders.order_id", ondelete="CASCADE"), nullable=True)
     session_id = Column(PGUUID, ForeignKey(column="sessions.session_id"))
+    assigned_to = Column(PGUUID, ForeignKey(column="users.user_id"), nullable=True)
     
 class Session(Base): 
     __tablename__ = "sessions"
@@ -82,6 +87,7 @@ class Session(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
     is_active = Column(Boolean, default=True, nullable=False)
+    rating = Column(Integer, nullable=True)
 
     user_id = Column(PGUUID, ForeignKey(column="users.user_id"))
 
